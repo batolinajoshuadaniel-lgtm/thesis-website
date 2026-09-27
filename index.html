@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#173f2a" />
+  <meta name="description" content="AI-Driven Machine for Pest and Fungi Monitoring with Pesticide Dispensing in Sustainable Lettuce Cultivation." />
+  <title>AI-Driven Lettuce Monitoring System | Thesis Research</title>
+
+  <!--
+    ============================================================
+    SUPABASE CONFIGURATION
+    ============================================================
+    1. Create your Supabase project.
+    2. Copy your Project URL and Publishable key.
+    3. Replace the two placeholders below.
+    4. NEVER put a Supabase secret/service-role key here.
+       Only the publishable/anon key belongs in browser code.
+    ============================================================
+  -->
+  <script>
+    const SUPABASE_URL = "https://meffytmlfpuxlnxcclor.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_IOSA7juT_hB3BnyV_Ay6qw_xJ4ISO0Z";
+
+    /*
+      This is only a UI convenience. REAL security must come from
+      the Supabase RLS policies in the SQL setup file.
+    */
+    const ADMIN_EMAIL = "batolinajoshuadaniel@gmail.com";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    :root {
+      --green-950: #102c1e;
+      --green-900: #173f2a;
+      --green-800: #1f5a3a;
+      --green-700: #2e7650;
+      --green-600: #3f8b5e;
+      --green-100: #e8f2eb;
+      --green-50: #f5faf6;
+      --cream: #fbfaf5;
+      --white: #ffffff;
+      --ink: #17231c;
+      --muted: #617067;
+      --border: #dce5df;
+      --gold: #b78a36;
+      --shadow: 0 16px 45px rgba(23, 63, 42, 0.08);
+      --radius: 18px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Inter", sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin-inline: auto;
+    }
+
+    .topbar {
+      background: var(--green-950);
+      color: #dfeee4;
+      font-size: .82rem;
+      padding: 7px 0;
+    }
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(251,250,245,.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(220,229,223,.9);
+    }
+
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--green-900);
+      flex: 0 0 auto;
+    }
+    .brand-text {
+      font-size: .86rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .brand-text small {
+      display: block;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: .86rem;
+      font-weight: 600;
+    }
+    .nav-links a {
+      color: #3d4b43;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--green-700); }
+
+    .menu-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      font-size: 1.25rem;
+      color: var(--green-900);
+    }
+
+    .hero {
+      padding: 95px 0 80px;
+      background:
+        radial-gradient(circle at 88% 15%, rgba(63,139,94,.14), transparent 28%),
+        radial-gradient(circle at 10% 85%, rgba(183,138,54,.08), transparent 25%),
+        linear-gradient(180deg, #fbfaf5 0%, #f3f8f4 100%);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 70px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 12px;
+      border: 1px solid #cbdccf;
+      background: #eef6f0;
+      color: var(--green-800);
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: "Playfair Display", serif;
+      color: var(--green-950);
+      font-size: clamp(2.3rem, 5vw, 4.4rem);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+      max-width: 850px;
+    }
+    .hero p {
+      color: var(--muted);
+      max-width: 760px;
+      margin-top: 23px;
+      font-size: 1.03rem;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 10px;
+      padding: 12px 18px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      font-size: .88rem;
+      transition: .2s ease;
+    }
+    .btn-primary {
+      color: white;
+      background: var(--green-900);
+    }
+    .btn-primary:hover { background: var(--green-800); transform: translateY(-1px); }
+    .btn-outline {
+      border-color: #bfd0c4;
+      color: var(--green-900);
+      background: rgba(255,255,255,.5);
+    }
+    .btn-outline:hover { border-color: var(--green-700); }
+
+    .hero-card {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.72);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .hero-card .seal {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid #c8d8cc;
+      color: var(--green-900);
+      margin-bottom: 22px;
+      font-size: 1.7rem;
+      background: #f5faf6;
+    }
+    .hero-card h3 {
+      font-family: "Playfair Display", serif;
+      font-size: 1.45rem;
+      color: var(--green-950);
+    }
+    .hero-card p {
+      margin-top: 10px;
+      font-size: .88rem;
+    }
+
+    section { padding: 88px 0; }
+    section:nth-of-type(even) { background: #f5f8f5; }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 38px;
+    }
+    .section-kicker {
+      color: var(--green-700);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .72rem;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: "Playfair Display", serif;
+      color: var(--green-950);
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.2;
+    }
+    .section-desc {
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .facts {
+      margin-top: -34px;
+      position: relative;
+      z-index: 2;
+    }
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .fact {
+      padding: 23px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .fact:last-child { border-right: 0; }
+    .fact strong {
+      display: block;
+      color: var(--green-900);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .fact span { color: var(--muted); font-size: .78rem; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(23,63,42,.04);
+    }
+    .card h3 {
+      color: var(--green-950);
+      font-size: 1.08rem;
+      margin-bottom: 10px;
+    }
+    .card p { color: var(--muted); font-size: .91rem; }
+    .card + .card { margin-top: 0; }
+
+    .objectives {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .objective {
+      display: flex;
+      gap: 15px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 21px;
+    }
+    .objective-num {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--green-100);
+      color: var(--green-900);
+      font-weight: 800;
+      font-size: .8rem;
+    }
+    .objective p { color: var(--muted); font-size: .88rem; }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      position: relative;
+    }
+    .step {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 23px 18px;
+      position: relative;
+    }
+    .step-no {
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+    .step i {
+      font-size: 1.35rem;
+      color: var(--green-700);
+      margin: 13px 0 11px;
+    }
+    .step h3 { font-size: .95rem; color: var(--green-950); margin-bottom: 7px; }
+    .step p { color: var(--muted); font-size: .76rem; line-height: 1.55; }
+
+    .targets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .target {
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: white;
+    }
+    .target-visual {
+      height: 150px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #edf5ef, #f8f4e9);
+      color: var(--green-800);
+      font-size: 3.2rem;
+    }
+    .target-content { padding: 22px; }
+    .target-content h3 { color: var(--green-950); margin-bottom: 7px; }
+    .target-content p { color: var(--muted); font-size: .83rem; }
+
+    .ai-panel {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+    .ai-model {
+      background: var(--green-900);
+      color: white;
+      border-radius: 20px;
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ai-model .model-label {
+      color: #bed7c6;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+    }
+    .ai-model strong {
+      display: block;
+      font-family: "Playfair Display", serif;
+      font-size: 3rem;
+      margin-top: 15px;
+    }
+    .ai-model p { color: #d9e9de; font-size: .87rem; margin-top: 14px; }
+    .ai-details {
+      display: grid;
+      gap: 14px;
+    }
+    .ai-detail {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 21px;
+    }
+    .ai-detail h3 { font-size: .95rem; color: var(--green-950); }
+    .ai-detail p { color: var(--muted); font-size: .83rem; margin-top: 6px; }
+
+    .architecture {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 35px;
+      overflow-x: auto;
+    }
+    .arch-row {
+      min-width: 760px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+    .arch-box {
+      min-height: 125px;
+      border: 1px solid #cfded3;
+      border-radius: 15px;
+      padding: 17px;
+      background: #f7faf7;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .arch-box i { color: var(--green-700); font-size: 1.35rem; margin-bottom: 9px; }
+    .arch-box strong { font-size: .83rem; color: var(--green-950); }
+    .arch-box span { color: var(--muted); font-size: .69rem; margin-top: 5px; }
+    .arrow {
+      text-align: center;
+      color: #9ab3a1;
+      font-size: 1.1rem;
+    }
+
+    .component-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .component {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      background: #f7faf7;
+      border-radius: 10px;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .component i { color: var(--green-700); margin-top: 3px; }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .method {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 23px;
+    }
+    .method i {
+      color: var(--green-700);
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+    }
+    .method h3 { font-size: .96rem; color: var(--green-950); }
+    .method p { color: var(--muted); font-size: .81rem; margin-top: 7px; }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    .metric {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 24px;
+      text-align: center;
+    }
+    .metric strong {
+      display: block;
+      color: var(--green-900);
+      font-size: 2rem;
+      line-height: 1.1;
+      margin-bottom: 5px;
+    }
+    .metric span { color: var(--muted); font-size: .76rem; }
+    .results-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: .8rem;
+      background: #fffdf7;
+      border: 1px solid #eadfbe;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .researchers {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 17px;
+    }
+    .researcher {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 23px;
+      min-height: 170px;
+    }
+    .researcher-avatar {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--green-100);
+      color: var(--green-900);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      margin-bottom: 17px;
+    }
+    .researcher h3 { font-size: .91rem; color: var(--green-950); line-height: 1.35; }
+    .researcher span { color: var(--muted); font-size: .75rem; display: block; margin-top: 6px; }
+
+    .adviser {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--green-900);
+      color: white;
+      border-radius: 18px;
+      padding: 27px;
+      margin-top: 20px;
+    }
+    .adviser-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.1);
+      flex: 0 0 auto;
+    }
+    .adviser h3 { font-size: 1rem; }
+    .adviser p { color: #d4e6db; font-size: .82rem; margin-top: 3px; }
+
+    .docs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 17px;
+    }
+    .doc {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 24px;
+    }
+    .doc i { color: var(--green-700); font-size: 1.3rem; margin-bottom: 15px; }
+    .doc h3 { color: var(--green-950); font-size: .94rem; }
+    .doc p { color: var(--muted); font-size: .79rem; margin: 6px 0 15px; }
+    .doc a {
+      color: var(--green-800);
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    footer {
+      background: var(--green-950);
+      color: #dbe9df;
+      padding: 55px 0 25px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .7fr .7fr;
+      gap: 40px;
+    }
+    footer h3 {
+      font-family: "Playfair Display", serif;
+      color: white;
+      margin-bottom: 9px;
+    }
+    footer p, footer li { color: #aebfb4; font-size: .78rem; }
+    footer ul { list-style: none; display: grid; gap: 5px; }
+    .footer-bottom {
+      margin-top: 35px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: .72rem;
+      color: #93a89a;
+    }
+
+    #toTop {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--green-900);
+      color: white;
+      display: none;
+      z-index: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Admin */
+    .admin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(8, 24, 16, .72);
+      backdrop-filter: blur(8px);
+      overflow-y: auto;
+      padding: 30px 15px;
+    }
+    .admin-overlay.open { display: block; }
+
+    .admin-shell {
+      width: min(1100px, 100%);
+      margin: auto;
+      background: #f6f8f6;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.25);
+    }
+    .admin-login {
+      width: min(440px, 100%);
+      margin: 8vh auto;
+      background: white;
+      border-radius: 18px;
+      padding: 32px;
+    }
+    .admin-header {
+      background: var(--green-950);
+      color: white;
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    .admin-header h2 { font-family: "Playfair Display", serif; }
+    .admin-header small { color: #bcd1c3; display: block; }
+    .admin-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.2);
+      background: transparent;
+      color: white;
+    }
+    .admin-body { padding: 25px; }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 20px;
+    }
+    .admin-tabs {
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+    .admin-tab {
+      text-align: left;
+      padding: 11px 13px;
+      border-radius: 9px;
+      border: 0;
+      background: transparent;
+      color: #56655c;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    .admin-tab.active {
+      background: var(--green-100);
+      color: var(--green-900);
+    }
+    .admin-panel {
+      display: none;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 24px;
+    }
+    .admin-panel.active { display: block; }
+    .admin-panel h3 { color: var(--green-950); margin-bottom: 6px; }
+    .admin-panel > p { color: var(--muted); font-size: .8rem; margin-bottom: 20px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      display: block;
+      color: #35463c;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      border: 1px solid #d3ded7;
+      border-radius: 9px;
+      padding: 10px 11px;
+      background: #fbfcfb;
+      color: var(--ink);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(63,139,94,.1); }
+    .form-group textarea { min-height: 115px; resize: vertical; }
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .status {
+      display: none;
+      border-radius: 9px;
+      padding: 10px 12px;
+      font-size: .78rem;
+      margin-bottom: 15px;
+    }
+    .status.show { display: block; }
+    .status.success { background: #e8f5eb; color: #21603b; }
+    .status.error { background: #faeaea; color: #8a2f2f; }
+    .status.info { background: #eaf1f7; color: #2b526f; }
+
+    .admin-user {
+      color: #bfd3c5;
+      font-size: .72rem;
+      margin-right: auto;
+    }
+    .hidden { display: none !important; }
+
+    .media-upload {
+      border: 2px dashed #cbdacf;
+      border-radius: 14px;
+      padding: 25px;
+      text-align: center;
+      background: #f8fbf8;
+    }
+    .media-upload i { color: var(--green-700); font-size: 1.6rem; margin-bottom: 8px; }
+    .media-upload p { color: var(--muted); font-size: .77rem; margin-bottom: 12px; }
+
+    .media-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .media-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .media-item span { font-size: .77rem; color: var(--muted); word-break: break-all; }
+
+    .login-note {
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: .73rem;
+      line-height: 1.55;
+    }
+
+    .floating-admin {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 850;
+      border: 1px solid #d4e0d7;
+      background: rgba(255,255,255,.92);
+      color: var(--green-900);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .68rem;
+      font-weight: 700;
+      opacity: .2;
+      transition: opacity .2s;
+    }
+    .floating-admin:hover { opacity: 1; }
+
+    @media (max-width: 950px) {
+      .hero-grid, .ai-panel { grid-template-columns: 1fr; }
+      .facts-grid { grid-template-columns: 1fr 1fr; }
+      .fact:nth-child(2) { border-right: 0; }
+      .fact:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+      .workflow { grid-template-columns: repeat(2, 1fr); }
+      .researchers { grid-template-columns: repeat(2, 1fr); }
+      .admin-grid { grid-template-columns: 1fr; }
+      .admin-tabs { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .container { width: min(calc(100% - 28px), var(--max)); }
+      .topbar-inner { justify-content: center; text-align: center; }
+      .nav { min-height: 65px; }
+      .menu-btn { display: block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 65px;
+        background: var(--cream);
+        border-bottom: 1px solid var(--border);
+        padding: 15px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 8px 10px; }
+      .hero { padding: 65px 0; }
+      section { padding: 65px 0; }
+      .two-col, .objectives, .targets, .method-grid, .docs { grid-template-columns: 1fr; }
+      .facts-grid { grid-template-columns: 1fr; }
+      .fact { border-right: 0; border-bottom: 1px solid var(--border); }
+      .fact:last-child { border-bottom: 0; }
+      .workflow { grid-template-columns: 1fr; }
+      .results { grid-template-columns: 1fr 1fr; }
+      .researchers { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .component-list { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: auto; }
+      .admin-tabs { grid-template-columns: 1fr 1fr; }
+      .admin-body { padding: 15px; }
+      .admin-panel { padding: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span><i class="fa-solid fa-building-columns"></i> STI College Ortigas-Cainta</span>
+      <span>ICT Department · Bachelor of Science in Computer Engineering</span>
+    </div>
+  </div>
+
+  <header>
+    <div class="container nav">
+      <a href="#home" class="brand">
+        <div class="brand-mark"><i class="fa-solid fa-seedling"></i></div>
+        <div class="brand-text">
+          AI-Driven Lettuce Monitoring
+          <small>Thesis Research Project</small>
+        </div>
+      </a>
+
+      <button class="menu-btn" id="menuBtn" aria-label="Open navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#about">About</a>
+        <a href="#objectives">Objectives</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#ai">AI</a>
+        <a href="#system">System</a>
+        <a href="#methodology">Methodology</a>
+        <a href="#results">Results</a>
+        <a href="#researchers">Researchers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><i class="fa-solid fa-leaf"></i> Academic Research Project</div>
+          <h1 id="heroTitle">AI-Driven Machine for Pest and Fungi Monitoring with Pesticide Dispensing in Sustainable Lettuce Cultivation</h1>
+          <p id="heroDescription">
+            A computer-vision-assisted agricultural system designed to detect, monitor, and log the occurrence of pests and fungi in lettuce, with automated pesticide dispensing when the detected condition becomes severe.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#about"><i class="fa-solid fa-book-open"></i> Explore Research</a>
+            <a class="btn btn-outline" href="#system"><i class="fa-solid fa-diagram-project"></i> View System</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="seal"><i class="fa-solid fa-microscope"></i></div>
+          <h3>Research Focus</h3>
+          <p>
+            Sustainable lettuce cultivation through AI-assisted pest and fungi monitoring and automated pesticide dispensing.
+          </p>
+          <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border);">
+            <small style="color:var(--muted);font-size:.72rem;">AI MODEL</small>
+            <strong style="display:block;color:var(--green-900);font-size:1.2rem;margin-top:3px;">YOLOv8s</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="facts">
+      <div class="container">
+        <div class="facts-grid">
+          <div class="fact">
+            <strong>Lettuce</strong>
+            <span>Primary crop</span>
+          </div>
+          <div class="fact">
+            <strong>YOLOv8s</strong>
+            <span>AI detection model</span>
+          </div>
+          <div class="fact">
+            <strong>3 Targets</strong>
+            <span>Caterpillar · Whiteflies · Fungi</span>
+          </div>
+          <div class="fact">
+            <strong>Automated</strong>
+            <span>Monitoring & pesticide dispensing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">01 · Research Overview</div>
+          <h2 class="section-title">About the Research</h2>
+          <p class="section-desc" id="aboutText">
+            This study focuses on the development of an AI-driven machine for monitoring pests and fungi affecting lettuce cultivation. The system combines computer vision and automated dispensing to support timely observation and response.
+          </p>
+        </div>
+
+        <div class="two-col reveal">
+          <article class="card">
+            <h3>Research Purpose</h3>
+            <p id="purposeText">
+              To detect, monitor, and log the occurrence of pest in the lettuce, and to automatically dispense a pesticide once it is severe.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Research Scope</h3>
+            <p id="scopeText">
+              The project is centered on lettuce cultivation and the monitoring of caterpillars, whiteflies, and fungi using YOLOv8s as the selected AI model.
+            </p>
+          </article>
+        </div>
+
+        <div class="two-col reveal" style="margin-top:20px;">
+          <article class="card">
+            <h3>Research Problem</h3>
+            <p id="problemText">
+              Pest and fungi occurrence can affect lettuce cultivation. This project explores an automated approach for detecting and monitoring these conditions and responding through pesticide dispensing when the condition is considered severe.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Sustainable Agriculture Context</h3>
+            <p id="sustainabilityText">
+              The proposed system is intended to support sustainable lettuce cultivation by integrating monitoring, logging, AI-assisted detection, and automated dispensing into a single prototype system.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="objectives">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">02 · Study Direction</div>
+          <h2 class="section-title">Research Objectives</h2>
+          <p class="section-desc">The objectives can be updated from the private administrator dashboard as the research develops.</p>
+        </div>
+
+        <div class="objectives reveal" id="objectivesList">
+          <div class="objective">
+            <div class="objective-num">01</div>
+            <p>Develop an AI-driven machine for monitoring pests and fungi in sustainable lettuce cultivation.</p>
+          </div>
+          <div class="objective">
+            <div class="objective-num">02</div>
+            <p>Use YOLOv8s to assist in identifying the selected target conditions.</p>
+          </div>
+          <div class="objective">
+            <div class="objective-num">03</div>
+            <p>Monitor and log the occurrence of pests and fungi affecting the lettuce.</p>
+          </div>
+          <div class="objective">
+            <div class="objective-num">04</div>
+            <p>Automatically dispense pesticide when the detected condition reaches the project's defined severe condition.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">03 · System Process</div>
+          <h2 class="section-title">How the Proposed System Works</h2>
+          <p class="section-desc">A simplified representation of the intended monitoring and response process.</p>
+        </div>
+
+        <div class="workflow reveal">
+          <div class="step">
+            <div class="step-no">STEP 01</div>
+            <i class="fa-solid fa-camera"></i>
+            <h3>Capture</h3>
+            <p>The system obtains visual information from the lettuce cultivation area.</p>
+          </div>
+          <div class="step">
+            <div class="step-no">STEP 02</div>
+            <i class="fa-solid fa-brain"></i>
+            <h3>AI Detection</h3>
+            <p>YOLOv8s is used as the selected model for identifying target conditions.</p>
+          </div>
+          <div class="step">
+            <div class="step-no">STEP 03</div>
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Monitor & Log</h3>
+            <p>Detected occurrences are monitored and recorded as part of the system's information.</p>
+          </div>
+          <div class="step">
+            <div class="step-no">STEP 04</div>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h3>Assess Severity</h3>
+            <p>The system determines whether the detected condition reaches the defined severe state.</p>
+          </div>
+          <div class="step">
+            <div class="step-no">STEP 05</div>
+            <i class="fa-solid fa-spray-can-sparkles"></i>
+            <h3>Dispense</h3>
+            <p>Pesticide dispensing is activated when the severe condition is reached.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">04 · Artificial Intelligence</div>
+          <h2 class="section-title">AI-Assisted Detection</h2>
+          <p class="section-desc">
+            The project uses a computer vision approach to support the monitoring of selected pests and fungi in lettuce cultivation.
+          </p>
+        </div>
+
+        <div class="ai-panel reveal">
+          <div class="ai-model">
+            <div>
+              <div class="model-label">Selected AI Model</div>
+              <strong id="aiModel">YOLOv8s</strong>
+            </div>
+            <p id="aiDescription">
+              YOLOv8s is used as the project's selected object-detection model for identifying the target conditions defined by the researchers.
+            </p>
+          </div>
+
+          <div class="ai-details">
+            <div class="ai-detail">
+              <h3><i class="fa-solid fa-crosshairs"></i> Detection Targets</h3>
+              <p>Caterpillars, whiteflies, and fungi are the current target conditions identified for the system.</p>
+            </div>
+            <div class="ai-detail">
+              <h3><i class="fa-solid fa-database"></i> Monitoring & Logging</h3>
+              <p>The system is intended to monitor and log detected occurrences to provide information about pest and fungi presence.</p>
+            </div>
+            <div class="ai-detail">
+              <h3><i class="fa-solid fa-gears"></i> Automated Response</h3>
+              <p>Detection information supports the automated pesticide dispensing component when the condition is classified as severe according to the project's criteria.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="targets">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">05 · Target Conditions</div>
+          <h2 class="section-title">What the System Monitors</h2>
+        </div>
+
+        <div class="targets reveal">
+          <article class="target">
+            <div class="target-visual"><i class="fa-solid fa-bug"></i></div>
+            <div class="target-content">
+              <h3>Caterpillars</h3>
+              <p>One of the selected pest conditions to be monitored in the lettuce cultivation environment.</p>
+            </div>
+          </article>
+
+          <article class="target">
+            <div class="target-visual"><i class="fa-solid fa-bugs"></i></div>
+            <div class="target-content">
+              <h3>Whiteflies</h3>
+              <p>A selected pest condition included in the project's AI-assisted monitoring scope.</p>
+            </div>
+          </article>
+
+          <article class="target">
+            <div class="target-visual"><i class="fa-solid fa-leaf"></i></div>
+            <div class="target-content">
+              <h3>Fungi</h3>
+              <p>A selected condition affecting lettuce that the system is intended to monitor.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="system">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">06 · System Design</div>
+          <h2 class="section-title">System Architecture</h2>
+          <p class="section-desc">The architecture below presents the major functional flow of the proposed prototype.</p>
+        </div>
+
+        <div class="architecture reveal">
+          <div class="arch-row">
+            <div class="arch-box">
+              <i class="fa-solid fa-camera"></i>
+              <strong>Visual Input</strong>
+              <span>Crop/environment imagery</span>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-box">
+              <i class="fa-solid fa-microchip"></i>
+              <strong>AI Processing</strong>
+              <span>YOLOv8s detection</span>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-box">
+              <i class="fa-solid fa-gears"></i>
+              <strong>Control & Dispensing</strong>
+              <span>Automated response</span>
+            </div>
+          </div>
+
+          <div style="height:15px;"></div>
+
+          <div class="arch-row">
+            <div class="arch-box">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <strong>Monitoring</strong>
+              <span>Occurrence information</span>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-box">
+              <i class="fa-solid fa-database"></i>
+              <strong>Logging</strong>
+              <span>Recorded observations</span>
+            </div>
+            <div class="arrow"><i class="fa-solid fa-arrow-right"></i></div>
+            <div class="arch-box">
+              <i class="fa-solid fa-seedling"></i>
+              <strong>Lettuce Cultivation</strong>
+              <span>Application environment</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col reveal" style="margin-top:25px;">
+          <article class="card">
+            <h3>Prototype Hardware</h3>
+            <div class="component-list">
+              <div class="component"><i class="fa-solid fa-microchip"></i> Arduino Mega</div>
+              <div class="component"><i class="fa-solid fa-arrows-left-right"></i> 3 Limit Switches</div>
+              <div class="component"><i class="fa-solid fa-droplet"></i> 2 Float Switches</div>
+              <div class="component"><i class="fa-solid fa-gears"></i> 3 A4988 Drivers</div>
+              <div class="component"><i class="fa-solid fa-rotate"></i> 3 Stepper Motors</div>
+              <div class="component"><i class="fa-solid fa-display"></i> I2C LCD</div>
+              <div class="component"><i class="fa-solid fa-bolt"></i> 12V Supply</div>
+              <div class="component"><i class="fa-solid fa-plug"></i> 5V Supply</div>
+              <div class="component"><i class="fa-solid fa-toggle-on"></i> 2-Pole Breaker</div>
+              <div class="component"><i class="fa-solid fa-toggle-on"></i> 1-Pole Breaker</div>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Software / AI Components</h3>
+            <div class="component-list">
+              <div class="component"><i class="fa-solid fa-eye"></i> Computer Vision</div>
+              <div class="component"><i class="fa-solid fa-brain"></i> YOLOv8s</div>
+              <div class="component"><i class="fa-solid fa-chart-simple"></i> Detection Monitoring</div>
+              <div class="component"><i class="fa-solid fa-clipboard-check"></i> Occurrence Logging</div>
+              <div class="component"><i class="fa-solid fa-code"></i> Embedded Control</div>
+              <div class="component"><i class="fa-solid fa-gears"></i> Automated Dispensing</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="methodology">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">07 · Research Methodology</div>
+          <h2 class="section-title">Development & Evaluation</h2>
+          <p class="section-desc" id="methodologyIntro">
+            The project follows an iterative development approach in which the AI detection component and automated hardware system are integrated into a working prototype and evaluated according to the researchers' defined criteria.
+          </p>
+        </div>
+
+        <div class="method-grid reveal">
+          <article class="method">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+            <h3>Requirement Analysis</h3>
+            <p>Identify the target crop, conditions to monitor, system requirements, and intended automated response.</p>
+          </article>
+          <article class="method">
+            <i class="fa-solid fa-brain"></i>
+            <h3>AI Development</h3>
+            <p>Prepare and develop the computer-vision detection component using the selected YOLOv8s model.</p>
+          </article>
+          <article class="method">
+            <i class="fa-solid fa-microchip"></i>
+            <h3>Hardware Integration</h3>
+            <p>Integrate the controller, sensors, stepper motors, drivers, display, power components, and dispensing mechanism.</p>
+          </article>
+          <article class="method">
+            <i class="fa-solid fa-link"></i>
+            <h3>System Integration</h3>
+            <p>Connect detection, monitoring, logging, severity assessment, and automated dispensing into the prototype workflow.</p>
+          </article>
+          <article class="method">
+            <i class="fa-solid fa-vial"></i>
+            <h3>Testing</h3>
+            <p>Test the system using the researchers' selected scenarios and evaluation procedures.</p>
+          </article>
+          <article class="method">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+            <h3>Evaluation</h3>
+            <p>Record and present the project's measured performance results once experimental testing is completed.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">08 · Experimental Results</div>
+          <h2 class="section-title">Results & Evaluation</h2>
+          <p class="section-desc">
+            Results are intentionally left open so the researchers can enter their verified experimental measurements through the administrator dashboard.
+          </p>
+        </div>
+
+        <div class="results reveal">
+          <div class="metric">
+            <strong id="metricAccuracy">—</strong>
+            <span>Accuracy</span>
+          </div>
+          <div class="metric">
+            <strong id="metricPrecision">—</strong>
+            <span>Precision</span>
+          </div>
+          <div class="metric">
+            <strong id="metricRecall">—</strong>
+            <span>Recall</span>
+          </div>
+          <div class="metric">
+            <strong id="metricF1">—</strong>
+            <span>F1 Score</span>
+          </div>
+        </div>
+
+        <div class="results-note reveal" id="resultsNote">
+          <i class="fa-solid fa-circle-info"></i>
+          No final experimental values have been entered yet. Add verified results from the Admin Dashboard once testing is complete.
+        </div>
+      </div>
+    </section>
+
+    <section id="researchers">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">09 · Research Team</div>
+          <h2 class="section-title">Researchers & Adviser</h2>
+        </div>
+
+        <div class="researchers reveal" id="researchersList">
+          <article class="researcher">
+            <div class="researcher-avatar">JB</div>
+            <h3>Batolina, Joshua Daniel A.</h3>
+            <span>Leader / Head Researcher / Proponent</span>
+          </article>
+          <article class="researcher">
+            <div class="researcher-avatar">NO</div>
+            <h3>Agpawa, Nicole Samantha O.</h3>
+            <span>Proponent</span>
+          </article>
+          <article class="researcher">
+            <div class="researcher-avatar">JD</div>
+            <h3>Dela Cruz, Jed Paulo S.</h3>
+            <span>Proponent</span>
+          </article>
+          <article class="researcher">
+            <div class="researcher-avatar">KG</div>
+            <h3>Guibao, Kristoffer I.</h3>
+            <span>Proponent</span>
+          </article>
+        </div>
+
+        <div class="adviser reveal">
+          <div class="adviser-icon"><i class="fa-solid fa-user-tie"></i></div>
+          <div>
+            <h3 id="adviserName">Dexter C. Maraya REE</h3>
+            <p>Research Adviser · STI College Ortigas-Cainta · ICT Department</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="documentation">
+      <div class="container">
+        <div class="section-head reveal">
+          <div class="section-kicker">10 · Documentation</div>
+          <h2 class="section-title">Research Documentation</h2>
+          <p class="section-desc">Documents and media can be added later through the private administrator dashboard.</p>
+        </div>
+
+        <div class="docs reveal" id="documentsList">
+          <article class="doc">
+            <i class="fa-solid fa-file-lines"></i>
+            <h3>Research Paper</h3>
+            <p>Upload the latest approved research document when available.</p>
+            <span style="font-size:.72rem;color:#87958c;">Not uploaded yet</span>
+          </article>
+          <article class="doc">
+            <i class="fa-solid fa-images"></i>
+            <h3>Prototype Photos</h3>
+            <p>Add photos of the machine, components, assembly, and testing.</p>
+            <span style="font-size:.72rem;color:#87958c;">Not uploaded yet</span>
+          </article>
+          <article class="doc">
+            <i class="fa-solid fa-diagram-project"></i>
+            <h3>System Diagrams</h3>
+            <p>Add architecture, wiring, flowchart, and system diagrams.</p>
+            <span style="font-size:.72rem;color:#87958c;">Not uploaded yet</span>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h3>AI-Driven Lettuce Monitoring</h3>
+          <p>
+            Academic thesis information website for the study
+            <strong style="color:#dfece3;">“AI-Driven Machine for Pest and Fungi Monitoring with Pesticide Dispensing in Sustainable Lettuce Cultivation.”</strong>
+          </p>
+        </div>
+        <div>
+          <h3>Institution</h3>
+          <ul>
+            <li>STI College Ortigas-Cainta</li>
+            <li>ICT Department</li>
+            <li>BS Computer Engineering</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Research</h3>
+          <ul>
+            <li><a href="#about">Overview</a></li>
+            <li><a href="#ai">AI Detection</a></li>
+            <li><a href="#system">System</a></li>
+            <li><a href="#results">Results</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 Thesis Research Project · STI College Ortigas-Cainta</span>
+        <span>Academic information website</span>
+      </div>
+    </div>
+  </footer>
+
+  <button id="toTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+  <!-- Subtle admin access. Security is enforced by Supabase RLS, not this button. -->
+  <button class="floating-admin" id="openAdmin"><i class="fa-solid fa-lock"></i> Admin</button>
+
+  <!-- ============================================================
+       ADMIN OVERLAY
+       ============================================================ -->
+  <div class="admin-overlay" id="adminOverlay">
+    <div id="loginView" class="admin-login">
+      <div style="width:55px;height:55px;border-radius:14px;background:var(--green-100);color:var(--green-900);display:grid;place-items:center;font-size:1.3rem;margin-bottom:20px;">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;color:var(--green-950);">Research Admin</h2>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:7px;">
+        Private dashboard for managing the thesis website.
+      </p>
+
+      <div id="loginStatus" class="status"></div>
+
+      <form id="loginForm" style="margin-top:22px;">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="email" required placeholder="your-email@example.com">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%;" type="submit">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <p class="login-note">
+        New account registration is intentionally not included here. Create your one admin account from Supabase first, then disable public sign-ups in the Supabase Auth settings.
+      </p>
+
+      <button class="btn btn-outline" style="width:100%;margin-top:10px;" id="closeLogin" type="button">Close</button>
+    </div>
+
+    <div id="dashboardView" class="admin-shell hidden">
+      <div class="admin-header">
+        <div>
+          <h2>Thesis Admin Dashboard</h2>
+          <small>Manage the public research website</small>
+        </div>
+        <span class="admin-user" id="adminUserEmail"></span>
+        <button class="admin-close" id="logoutBtn" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+
+      <div class="admin-body">
+        <div id="adminStatus" class="status"></div>
+
+        <div class="admin-grid">
+          <div class="admin-tabs">
+            <button class="admin-tab active" data-panel="general"><i class="fa-solid fa-file-lines"></i> General</button>
+            <button class="admin-tab" data-panel="objectives"><i class="fa-solid fa-list-check"></i> Objectives</button>
+            <button class="admin-tab" data-panel="aiPanel"><i class="fa-solid fa-brain"></i> AI / Targets</button>
+            <button class="admin-tab" data-panel="method"><i class="fa-solid fa-flask"></i> Methodology</button>
+            <button class="admin-tab" data-panel="resultsPanel"><i class="fa-solid fa-chart-simple"></i> Results</button>
+            <button class="admin-tab" data-panel="researchersPanel"><i class="fa-solid fa-users"></i> Researchers</button>
+            <button class="admin-tab" data-panel="mediaPanel"><i class="fa-solid fa-images"></i> Media</button>
+          </div>
+
+          <div>
+            <section class="admin-panel active" id="panel-general">
+              <h3>General Information</h3>
+              <p>Update the main information displayed on the public thesis website.</p>
+
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>Research Title</label>
+                  <input id="adminTitle">
+                </div>
+                <div class="form-group full">
+                  <label>Hero Description</label>
+                  <textarea id="adminHeroDescription"></textarea>
+                </div>
+                <div class="form-group full">
+                  <label>Research Overview</label>
+                  <textarea id="adminAbout"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Research Purpose</label>
+                  <textarea id="adminPurpose"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Research Scope</label>
+                  <textarea id="adminScope"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Research Problem</label>
+                  <textarea id="adminProblem"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Sustainability Context</label>
+                  <textarea id="adminSustainability"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Adviser</label>
+                  <input id="adminAdviser">
+                </div>
+              </div>
+
+              <div class="admin-actions">
+                <button class="btn btn-primary save-content" data-section="general"><i class="fa-solid fa-floppy-disk"></i> Save General Information</button>
+              </div>
+            </section>
+
+            <section class="admin-panel" id="panel-objectives">
+              <h3>Research Objectives</h3>
+              <p>Enter one objective per line. Numbering is generated automatically.</p>
+              <div class="form-group">
+                <label>Objectives</label>
+                <textarea id="adminObjectives" style="min-height:240px;"></textarea>
+              </div>
+              <button class="btn btn-primary save-content" data-section="objectives"><i class="fa-solid fa-floppy-disk"></i> Save Objectives</button>
+            </section>
+
+            <section class="admin-panel" id="panel-aiPanel">
+              <h3>AI & Target Conditions</h3>
+              <p>Update the AI model description and the target conditions presented by the website.</p>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>AI Model</label>
+                  <input id="adminAiModel">
+                </div>
+                <div class="form-group">
+                  <label>Target Conditions</label>
+                  <input id="adminTargets">
+                </div>
+                <div class="form-group full">
+                  <label>AI Description</label>
+                  <textarea id="adminAiDescription"></textarea>
+                </div>
+                <div class="form-group full">
+                  <label>Severity / Automated Response Description</label>
+                  <textarea id="adminSeverity"></textarea>
+                </div>
+              </div>
+              <button class="btn btn-primary save-content" data-section="ai"><i class="fa-solid fa-floppy-disk"></i> Save AI Information</button>
+            </section>
+
+            <section class="admin-panel" id="panel-method">
+              <h3>Methodology</h3>
+              <p>Update the methodology introduction shown above the development stages.</p>
+              <div class="form-group">
+                <label>Methodology Introduction</label>
+                <textarea id="adminMethodology"></textarea>
+              </div>
+              <button class="btn btn-primary save-content" data-section="method"><i class="fa-solid fa-floppy-disk"></i> Save Methodology</button>
+            </section>
+
+            <section class="admin-panel" id="panel-resultsPanel">
+              <h3>Results & Evaluation</h3>
+              <p>Enter only verified values from your actual experiments. Leave a field blank if it has not been finalized.</p>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Accuracy</label>
+                  <input id="adminAccuracy" placeholder="e.g. 92.4%">
+                </div>
+                <div class="form-group">
+                  <label>Precision</label>
+                  <input id="adminPrecision" placeholder="e.g. 90.8%">
+                </div>
+                <div class="form-group">
+                  <label>Recall</label>
+                  <input id="adminRecall" placeholder="e.g. 91.7%">
+                </div>
+                <div class="form-group">
+                  <label>F1 Score</label>
+                  <input id="adminF1" placeholder="e.g. 91.2%">
+                </div>
+                <div class="form-group full">
+                  <label>Results Note</label>
+                  <textarea id="adminResultsNote"></textarea>
+                </div>
+              </div>
+              <button class="btn btn-primary save-content" data-section="results"><i class="fa-solid fa-floppy-disk"></i> Save Results</button>
+            </section>
+
+            <section class="admin-panel" id="panel-researchersPanel">
+              <h3>Researchers</h3>
+              <p>One researcher per line using: Name | Role</p>
+              <div class="form-group">
+                <label>Research Team</label>
+                <textarea id="adminResearchers" style="min-height:220px;"></textarea>
+              </div>
+              <button class="btn btn-primary save-content" data-section="researchers"><i class="fa-solid fa-floppy-disk"></i> Save Researchers</button>
+            </section>
+
+            <section class="admin-panel" id="panel-mediaPanel">
+              <h3>Media Uploads</h3>
+              <p>Upload prototype photos and research documentation to your Supabase Storage bucket.</p>
+
+              <div class="media-upload">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Choose an image or document to upload.</p>
+                <input id="mediaFile" type="file" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx">
+                <div style="margin-top:13px;">
+                  <button class="btn btn-primary" id="uploadMediaBtn" type="button">
+                    <i class="fa-solid fa-upload"></i> Upload File
+                  </button>
+                </div>
+              </div>
+
+              <div class="media-list" id="mediaList"></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fallbackContent = {
+      general: {
+        title: "AI-Driven Machine for Pest and Fungi Monitoring with Pesticide Dispensing in Sustainable Lettuce Cultivation",
+        heroDescription: "A computer-vision-assisted agricultural system designed to detect, monitor, and log the occurrence of pests and fungi in lettuce, with automated pesticide dispensing when the detected condition becomes severe.",
+        about: "This study focuses on the development of an AI-driven machine for monitoring pests and fungi affecting lettuce cultivation. The system combines computer vision and automated dispensing to support timely observation and response.",
+        purpose: "To detect, monitor, and log the occurrence of pest in the lettuce, and to automatically dispense a pesticide once it is severe.",
+        scope: "The project is centered on lettuce cultivation and the monitoring of caterpillars, whiteflies, and fungi using YOLOv8s as the selected AI model.",
+        problem: "Pest and fungi occurrence can affect lettuce cultivation. This project explores an automated approach for detecting and monitoring these conditions and responding through pesticide dispensing when the condition is considered severe.",
+        sustainability: "The proposed system is intended to support sustainable lettuce cultivation by integrating monitoring, logging, AI-assisted detection, and automated dispensing into a single prototype system.",
+        adviser: "Dexter C. Maraya REE"
+      },
+      objectives: [
+        "Develop an AI-driven machine for monitoring pests and fungi in sustainable lettuce cultivation.",
+        "Use YOLOv8s to assist in identifying the selected target conditions.",
+        "Monitor and log the occurrence of pests and fungi affecting the lettuce.",
+        "Automatically dispense pesticide when the detected condition reaches the project's defined severe condition."
+      ],
+      ai: {
+        model: "YOLOv8s",
+        targets: "Caterpillar, Whiteflies, Fungi",
+        description: "YOLOv8s is used as the project's selected object-detection model for identifying the target conditions defined by the researchers.",
+        severity: "Detection information supports the automated pesticide dispensing component when the condition is classified as severe according to the project's criteria."
+      },
+      method: {
+        introduction: "The project follows an iterative development approach in which the AI detection component and automated hardware system are integrated into a working prototype and evaluated according to the researchers' defined criteria."
+      },
+      results: {
+        accuracy: "—",
+        precision: "—",
+        recall: "—",
+        f1: "—",
+        note: "No final experimental values have been entered yet. Add verified results from the Admin Dashboard once testing is complete."
+      },
+      researchers: [
+        { name: "Batolina, Joshua Daniel A.", role: "Leader / Head Researcher / Proponent" },
+        { name: "Agpawa, Nicole Samantha O.", role: "Proponent" },
+        { name: "Dela Cruz, Jed Paulo S.", role: "Proponent" },
+        { name: "Guibao, Kristoffer I.", role: "Proponent" }
+      ]
+    };
+
+    let content = JSON.parse(JSON.stringify(fallbackContent));
+    let supabaseClient = null;
+    let currentUser = null;
+
+    const configured =
+      SUPABASE_URL &&
+      SUPABASE_PUBLISHABLE_KEY &&
+      !SUPABASE_URL.includes("YOUR_") &&
+      !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_");
+
+    if (configured && window.supabase) {
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+    }
+
+    const $ = (id) => document.getElementById(id);
+
+    function showStatus(element, message, type = "info") {
+      element.textContent = message;
+      element.className = "status show " + type;
+    }
+
+    function clearStatus(element) {
+      element.textContent = "";
+      element.className = "status";
+    }
+
+    function renderPublicSite() {
+      const g = content.general;
+      const a = content.ai;
+      const m = content.method;
+      const r = content.results;
+
+      $("heroTitle").textContent = g.title;
+      $("heroDescription").textContent = g.heroDescription;
+      $("aboutText").textContent = g.about;
+      $("purposeText").textContent = g.purpose;
+      $("scopeText").textContent = g.scope;
+      $("problemText").textContent = g.problem;
+      $("sustainabilityText").textContent = g.sustainability;
+      $("aiModel").textContent = a.model;
+      $("aiDescription").textContent = a.description;
+      $("methodologyIntro").textContent = m.introduction;
+      $("metricAccuracy").textContent = r.accuracy || "—";
+      $("metricPrecision").textContent = r.precision || "—";
+      $("metricRecall").textContent = r.recall || "—";
+      $("metricF1").textContent = r.f1 || "—";
+      $("resultsNote").innerHTML = '<i class="fa-solid fa-circle-info"></i> ' + escapeHtml(r.note || "");
+
+      $("adviserName").textContent = g.adviser;
+
+      renderObjectives();
+      renderResearchers();
+    }
+
+    function renderObjectives() {
+      const list = $("objectivesList");
+      list.innerHTML = "";
+      (content.objectives || []).forEach((item, index) => {
+        const article = document.createElement("div");
+        article.className = "objective";
+        article.innerHTML = `
+          <div class="objective-num">${String(index + 1).padStart(2, "0")}</div>
+          <p>${escapeHtml(item)}</p>
+        `;
+        list.appendChild(article);
+      });
+    }
+
+    function renderResearchers() {
+      const list = $("researchersList");
+      list.innerHTML = "";
+      (content.researchers || []).forEach(person => {
+        const initials = person.name.split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(x => x[0])
+          .join("")
+          .toUpperCase();
+
+        const article = document.createElement("article");
+        article.className = "researcher";
+        article.innerHTML = `
+          <div class="researcher-avatar">${escapeHtml(initials)}</div>
+          <h3>${escapeHtml(person.name)}</h3>
+          <span>${escapeHtml(person.role)}</span>
+        `;
+        list.appendChild(article);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadContent() {
+      if (!supabaseClient) {
+        renderPublicSite();
+        return;
+      }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("site_content")
+          .select("key, content");
+
+        if (error) throw error;
+
+        if (data && data.length) {
+          data.forEach(row => {
+            if (row.key === "general") content.general = { ...content.general, ...row.content };
+            if (row.key === "objectives") content.objectives = row.content;
+            if (row.key === "ai") content.ai = { ...content.ai, ...row.content };
+            if (row.key === "method") content.method = { ...content.method, ...row.content };
+            if (row.key === "results") content.results = { ...content.results, ...row.content };
+            if (row.key === "researchers") content.researchers = row.content;
+          });
+        }
+
+        renderPublicSite();
+      } catch (error) {
+        console.warn("Supabase content could not be loaded. Using local fallback.", error);
+        renderPublicSite();
+      }
+    }
+
+    function fillAdminForms() {
+      const g = content.general;
+      const a = content.ai;
+      const m = content.method;
+      const r = content.results;
+
+      $("adminTitle").value = g.title || "";
+      $("adminHeroDescription").value = g.heroDescription || "";
+      $("adminAbout").value = g.about || "";
+      $("adminPurpose").value = g.purpose || "";
+      $("adminScope").value = g.scope || "";
+      $("adminProblem").value = g.problem || "";
+      $("adminSustainability").value = g.sustainability || "";
+      $("adminAdviser").value = g.adviser || "";
+
+      $("adminObjectives").value = (content.objectives || []).join("\n");
+
+      $("adminAiModel").value = a.model || "";
+      $("adminTargets").value = a.targets || "";
+      $("adminAiDescription").value = a.description || "";
+      $("adminSeverity").value = a.severity || "";
+
+      $("adminMethodology").value = m.introduction || "";
+
+      $("adminAccuracy").value = r.accuracy === "—" ? "" : (r.accuracy || "");
+      $("adminPrecision").value = r.precision === "—" ? "" : (r.precision || "");
+      $("adminRecall").value = r.recall === "—" ? "" : (r.recall || "");
+      $("adminF1").value = r.f1 === "—" ? "" : (r.f1 || "");
+      $("adminResultsNote").value = r.note || "";
+
+      $("adminResearchers").value = (content.researchers || [])
+        .map(p => `${p.name} | ${p.role}`)
+        .join("\n");
+    }
+
+    async function saveSection(section) {
+      if (!supabaseClient) {
+        showStatus($("adminStatus"), "Supabase is not configured yet. Add your Supabase URL and publishable key to index.html first.", "error");
+        return;
+      }
+
+      const user = currentUser;
+      if (!user) {
+        showStatus($("adminStatus"), "Please sign in again.", "error");
+        return;
+      }
+
+      let value;
+
+      if (section === "general") {
+        value = {
+          title: $("adminTitle").value.trim(),
+          heroDescription: $("adminHeroDescription").value.trim(),
+          about: $("adminAbout").value.trim(),
+          purpose: $("adminPurpose").value.trim(),
+          scope: $("adminScope").value.trim(),
+          problem: $("adminProblem").value.trim(),
+          sustainability: $("adminSustainability").value.trim(),
+          adviser: $("adminAdviser").value.trim()
+        };
+      }
+
+      if (section === "objectives") {
+        value = $("adminObjectives").value
+          .split("\n")
+          .map(x => x.trim())
+          .filter(Boolean);
+      }
+
+      if (section === "ai") {
+        value = {
+          model: $("adminAiModel").value.trim(),
+          targets: $("adminTargets").value.trim(),
+          description: $("adminAiDescription").value.trim(),
+          severity: $("adminSeverity").value.trim()
+        };
+      }
+
+      if (section === "method") {
+        value = {
+          introduction: $("adminMethodology").value.trim()
+        };
+      }
+
+      if (section === "results") {
+        value = {
+          accuracy: $("adminAccuracy").value.trim() || "—",
+          precision: $("adminPrecision").value.trim() || "—",
+          recall: $("adminRecall").value.trim() || "—",
+          f1: $("adminF1").value.trim() || "—",
+          note: $("adminResultsNote").value.trim() || "No final experimental values have been entered yet."
+        };
+      }
+
+      if (section === "researchers") {
+        value = $("adminResearchers").value
+          .split("\n")
+          .map(line => {
+            const parts = line.split("|");
+            return {
+              name: (parts[0] || "").trim(),
+              role: (parts[1] || "Proponent").trim()
+            };
+          })
+          .filter(x => x.name);
+      }
+
+      try {
+        const { error } = await supabaseClient
+          .from("site_content")
+          .upsert({
+            key: section,
+            content: value,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, { onConflict: "key" });
+
+        if (error) throw error;
+
+        if (section === "general") content.general = { ...content.general, ...value };
+        if (section === "objectives") content.objectives = value;
+        if (section === "ai") content.ai = { ...content.ai, ...value };
+        if (section === "method") content.method = { ...content.method, ...value };
+        if (section === "results") content.results = { ...content.results, ...value };
+        if (section === "researchers") content.researchers = value;
+
+        renderPublicSite();
+        showStatus($("adminStatus"), "Changes saved successfully. The public website is now using the updated content.", "success");
+      } catch (error) {
+        console.error(error);
+        showStatus($("adminStatus"), "Save failed: " + (error.message || "Unknown error"), "error");
+      }
+    }
+
+    async function login(email, password) {
+      if (!supabaseClient) {
+        showStatus($("loginStatus"), "Supabase is not configured. Replace the configuration placeholders at the top of index.html.", "error");
+        return;
+      }
+
+      if (ADMIN_EMAIL !== "YOUR_ADMIN_EMAIL" && email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+        showStatus($("loginStatus"), "This account is not authorized for the thesis administrator.", "error");
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        showStatus($("loginStatus"), error.message, "error");
+        return;
+      }
+
+      currentUser = data.user;
+      showDashboard();
+    }
+
+    function showDashboard() {
+      $("loginView").classList.add("hidden");
+      $("dashboardView").classList.remove("hidden");
+      $("adminUserEmail").textContent = currentUser?.email || "";
+      fillAdminForms();
+      loadMedia();
+      clearStatus($("loginStatus"));
+      clearStatus($("adminStatus"));
+    }
+
+    function showLogin() {
+      $("dashboardView").classList.add("hidden");
+      $("loginView").classList.remove("hidden");
+    }
+
+    async function logout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      currentUser = null;
+      showLogin();
+    }
+
+    async function uploadMedia() {
+      if (!supabaseClient || !currentUser) {
+        showStatus($("adminStatus"), "You must be signed in before uploading.", "error");
+        return;
+      }
+
+      const file = $("mediaFile").files[0];
+      if (!file) {
+        showStatus($("adminStatus"), "Choose a file first.", "error");
+        return;
+      }
+
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `${Date.now()}-${safeName}`;
+
+      try {
+        const { error } = await supabaseClient.storage
+          .from("thesis-media")
+          .upload(path, file, {
+            cacheControl: "3600",
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        $("mediaFile").value = "";
+        showStatus($("adminStatus"), "File uploaded successfully.", "success");
+        await loadMedia();
+      } catch (error) {
+        console.error(error);
+        showStatus($("adminStatus"), "Upload failed: " + (error.message || "Unknown error"), "error");
+      }
+    }
+
+    async function loadMedia() {
+      if (!supabaseClient || !currentUser) return;
+
+      const list = $("mediaList");
+      list.innerHTML = '<div style="font-size:.75rem;color:var(--muted);">Loading files...</div>';
+
+      try {
+        const { data, error } = await supabaseClient.storage
+          .from("thesis-media")
+          .list("", { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+
+        if (error) throw error;
+
+        list.innerHTML = "";
+
+        if (!data || !data.length) {
+          list.innerHTML = '<div style="font-size:.75rem;color:var(--muted);">No uploaded files yet.</div>';
+          return;
+        }
+
+        data.forEach(file => {
+          const row = document.createElement("div");
+          row.className = "media-item";
+          row.innerHTML = `
+            <span><i class="fa-solid fa-file"></i> ${escapeHtml(file.name)}</span>
+            <button class="btn btn-outline delete-media" data-name="${encodeURIComponent(file.name)}" type="button">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          `;
+          list.appendChild(row);
+        });
+
+        document.querySelectorAll(".delete-media").forEach(btn => {
+          btn.addEventListener("click", () => deleteMedia(decodeURIComponent(btn.dataset.name)));
+        });
+      } catch (error) {
+        list.innerHTML = '<div style="font-size:.75rem;color:#8a2f2f;">Could not load media files.</div>';
+      }
+    }
+
+    async function deleteMedia(name) {
+      if (!confirm(`Delete "${name}"?`)) return;
+
+      try {
+        const { error } = await supabaseClient.storage
+          .from("thesis-media")
+          .remove([name]);
+
+        if (error) throw error;
+
+        showStatus($("adminStatus"), "File deleted.", "success");
+        await loadMedia();
+      } catch (error) {
+        showStatus($("adminStatus"), "Delete failed: " + (error.message || "Unknown error"), "error");
+      }
+    }
+
+    // Navigation
+    $("menuBtn").addEventListener("click", () => {
+      $("navLinks").classList.toggle("open");
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => $("navLinks").classList.remove("open"));
+    });
+
+    // Scroll to top
+    window.addEventListener("scroll", () => {
+      $("toTop").style.display = window.scrollY > 600 ? "grid" : "none";
+    });
+    $("toTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    // Reveal animation
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
+      });
+    }, { threshold: .08 });
+
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+    // Admin modal
+    $("openAdmin").addEventListener("click", async () => {
+      $("adminOverlay").classList.add("open");
+
+      if (supabaseClient) {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data?.session?.user) {
+          currentUser = data.session.user;
+          showDashboard();
+        } else {
+          showLogin();
+        }
+      } else {
+        showLogin();
+      }
+    });
+
+    $("closeLogin").addEventListener("click", () => {
+      $("adminOverlay").classList.remove("open");
+    });
+
+    $("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus($("loginStatus"));
+      await login($("loginEmail").value.trim(), $("loginPassword").value);
+    });
+
+    $("logoutBtn").addEventListener("click", logout);
+
+    // Admin tabs
+    document.querySelectorAll(".admin-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".admin-tab").forEach(x => x.classList.remove("active"));
+        document.querySelectorAll(".admin-panel").forEach(x => x.classList.remove("active"));
+
+        tab.classList.add("active");
+        $("panel-" + tab.dataset.panel).classList.add("active");
+      });
+    });
+
+    // Save buttons
+    document.querySelectorAll(".save-content").forEach(button => {
+      button.addEventListener("click", () => saveSection(button.dataset.section));
+    });
+
+    $("uploadMediaBtn").addEventListener("click", uploadMedia);
+
+    // Initial load
+    loadContent();
+
+    // Restore an existing session
+    if (supabaseClient) {
+      supabaseClient.auth.getSession().then(({ data }) => {
+        if (data?.session?.user) {
+          currentUser = data.session.user;
+        }
+      });
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        currentUser = session?.user || null;
+      });
+    }
+  </script>
+</body>
+</html>
