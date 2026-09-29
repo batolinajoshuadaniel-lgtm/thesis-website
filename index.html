@@ -1873,9 +1873,12 @@
       $("adminF1").value = r.f1 === "—" ? "" : (r.f1 || "");
       $("adminResultsNote").value = r.note || "";
 
-      $("adminResearchers").value = (content.researchers || [])
-        .map(p => `${p.name} | ${p.role}`)
-        .join("\n");
+      const legacyResearchersField = $("adminResearchers");
+      if (legacyResearchersField) {
+        legacyResearchersField.value = (content.researchers || [])
+          .map(p => `${p.name} | ${p.role}`)
+          .join("\n");
+      }
       $("adminAdviserName").value = g.adviser || "";
       renderResearcherAdminList();
       renderAdviserPhotoPreview();
@@ -1885,7 +1888,21 @@
       const container = $("researcherAdminList");
       if (!container) return;
       container.innerHTML = "";
-      (content.researchers || []).forEach((person, index) => {
+      if (!Array.isArray(content.researchers)) content.researchers = [];
+      const defaultResearchers = [
+        { name: "Batolina, Joshua Daniel A.", role: "Leader / Head Researcher / Proponent" },
+        { name: "Agpawa, Nicole Samantha O.", role: "Proponent" },
+        { name: "Dela Cruz, Jed Paulo S.", role: "Proponent" },
+        { name: "Guibao, Kristoffer I.", role: "Proponent" }
+      ];
+      defaultResearchers.forEach((person, index) => {
+        if (!content.researchers[index]) content.researchers[index] = { ...person };
+        else {
+          if (!content.researchers[index].name) content.researchers[index].name = person.name;
+          if (!content.researchers[index].role) content.researchers[index].role = person.role;
+        }
+      });
+      content.researchers.slice(0, 4).forEach((person, index) => {
         const initials = person.name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
         const card = document.createElement("div");
         card.className = "researcher-admin-card";
