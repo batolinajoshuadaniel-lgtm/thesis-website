@@ -561,8 +561,8 @@
       min-height: 170px;
     }
     .researcher-avatar {
-      width: 43px;
-      height: 43px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
       background: var(--green-100);
       color: var(--green-900);
@@ -570,7 +570,18 @@
       place-items: center;
       font-weight: 800;
       margin-bottom: 17px;
+      overflow: hidden;
+      border: 3px solid rgba(31,90,58,.12);
     }
+    .researcher-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .adviser-photo { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; flex: 0 0 70px; background: rgba(255,255,255,.12); display: grid; place-items: center; font-size: 1.25rem; border: 2px solid rgba(255,255,255,.22); }
+    .adviser-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .researcher-admin-card { border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; background: #fbfdfb; }
+    .researcher-admin-card h4 { color: var(--green-950); margin-bottom: 10px; }
+    .photo-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .photo-preview { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; background: var(--green-100); display: grid; place-items: center; color: var(--green-900); font-weight: 800; flex: 0 0 58px; }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-file { max-width: 100%; font-size: .76rem; }
     .researcher h3 { font-size: .91rem; color: var(--green-950); line-height: 1.35; }
     .researcher span { color: var(--muted); font-size: .75rem; display: block; margin-top: 6px; }
 
@@ -1357,31 +1368,10 @@
           <h2 class="section-title">Researchers & Adviser</h2>
         </div>
 
-        <div class="researchers reveal" id="researchersList">
-          <article class="researcher">
-            <div class="researcher-avatar">JB</div>
-            <h3>Batolina, Joshua Daniel A.</h3>
-            <span>Leader / Head Researcher / Proponent</span>
-          </article>
-          <article class="researcher">
-            <div class="researcher-avatar">NO</div>
-            <h3>Agpawa, Nicole Samantha O.</h3>
-            <span>Proponent</span>
-          </article>
-          <article class="researcher">
-            <div class="researcher-avatar">JD</div>
-            <h3>Dela Cruz, Jed Paulo S.</h3>
-            <span>Proponent</span>
-          </article>
-          <article class="researcher">
-            <div class="researcher-avatar">KG</div>
-            <h3>Guibao, Kristoffer I.</h3>
-            <span>Proponent</span>
-          </article>
-        </div>
+        <div class="researchers reveal" id="researchersList"></div>
 
         <div class="adviser reveal">
-          <div class="adviser-icon"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="adviser-photo" id="adviserPhoto"><i class="fa-solid fa-user-tie"></i></div>
           <div>
             <h3 id="adviserName">Dexter C. Maraya REE</h3>
             <p>Research Adviser · STI College Ortigas-Cainta · ICT Department</p>
@@ -1641,13 +1631,22 @@
             </section>
 
             <section class="admin-panel" id="panel-researchersPanel">
-              <h3>Researchers</h3>
-              <p>One researcher per line using: Name | Role</p>
-              <div class="form-group">
-                <label>Research Team</label>
-                <textarea id="adminResearchers" style="min-height:220px;"></textarea>
+              <h3>Researchers & Adviser Photos</h3>
+              <p>Add or replace profile photos for all four researchers and the adviser. Photos are uploaded to the <strong>thesis-media</strong> Supabase Storage bucket.</p>
+              <div id="researcherAdminList"></div>
+              <div class="researcher-admin-card">
+                <h4>Research Adviser</h4>
+                <div class="form-group">
+                  <label>Adviser Name</label>
+                  <input id="adminAdviserName" placeholder="Dexter C. Maraya REE">
+                </div>
+                <div class="photo-row">
+                  <div class="photo-preview" id="adviserPhotoPreview"><i class="fa-solid fa-user-tie"></i></div>
+                  <input class="photo-file" id="adviserPhotoFile" type="file" accept="image/*">
+                  <button class="btn btn-outline" id="uploadAdviserPhotoBtn" type="button"><i class="fa-solid fa-camera"></i> Upload Adviser Photo</button>
+                </div>
               </div>
-              <button class="btn btn-primary save-content" data-section="researchers"><i class="fa-solid fa-floppy-disk"></i> Save Researchers</button>
+              <button class="btn btn-primary save-content" data-section="researchers"><i class="fa-solid fa-floppy-disk"></i> Save Researchers & Adviser</button>
             </section>
 
             <section class="admin-panel" id="panel-mediaPanel">
@@ -1790,24 +1789,20 @@
       const list = $("researchersList");
       list.innerHTML = "";
       (content.researchers || []).forEach(person => {
-        const initials = person.name.split(/\s+/)
-          .filter(Boolean)
-          .slice(0, 2)
-          .map(x => x[0])
-          .join("")
-          .toUpperCase();
-
+        const initials = person.name.split(/\s+/).filter(Boolean).slice(0, 2).map(x => x[0]).join("").toUpperCase();
+        const avatar = person.photo
+          ? `<div class="researcher-avatar"><img src="${escapeHtml(person.photo)}" alt="${escapeHtml(person.name)}"></div>`
+          : `<div class="researcher-avatar">${escapeHtml(initials)}</div>`;
         const article = document.createElement("article");
         article.className = "researcher";
-        article.innerHTML = `
-          <div class="researcher-avatar">${escapeHtml(initials)}</div>
-          <h3>${escapeHtml(person.name)}</h3>
-          <span>${escapeHtml(person.role)}</span>
-        `;
+        article.innerHTML = `${avatar}<h3>${escapeHtml(person.name)}</h3><span>${escapeHtml(person.role)}</span>`;
         list.appendChild(article);
       });
+      const adviserPhoto = $("adviserPhoto");
+      if (adviserPhoto) adviserPhoto.innerHTML = content.general?.adviserPhoto
+        ? `<img src="${escapeHtml(content.general.adviserPhoto)}" alt="${escapeHtml(content.general.adviser || "Research Adviser")}">`
+        : `<i class="fa-solid fa-user-tie"></i>`;
     }
-
     function escapeHtml(value) {
       return String(value ?? "")
         .replaceAll("&", "&amp;")
@@ -1881,6 +1876,70 @@
       $("adminResearchers").value = (content.researchers || [])
         .map(p => `${p.name} | ${p.role}`)
         .join("\n");
+      $("adminAdviserName").value = g.adviser || "";
+      renderResearcherAdminList();
+      renderAdviserPhotoPreview();
+    }
+
+    function renderResearcherAdminList() {
+      const container = $("researcherAdminList");
+      if (!container) return;
+      container.innerHTML = "";
+      (content.researchers || []).forEach((person, index) => {
+        const initials = person.name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
+        const card = document.createElement("div");
+        card.className = "researcher-admin-card";
+        card.innerHTML = `<h4>${escapeHtml(person.name || `Researcher ${index+1}`)}</h4>
+          <div class="form-grid">
+            <div class="form-group"><label>Name</label><input class="researcher-name" data-index="${index}" value="${escapeHtml(person.name || "")}"></div>
+            <div class="form-group"><label>Role</label><input class="researcher-role" data-index="${index}" value="${escapeHtml(person.role || "Proponent")}"></div>
+          </div>
+          <div class="photo-row">
+            <div class="photo-preview">${person.photo ? `<img src="${escapeHtml(person.photo)}" alt="${escapeHtml(person.name || "Researcher")}">` : escapeHtml(initials || "?")}</div>
+            <input class="photo-file researcher-photo-file" data-index="${index}" type="file" accept="image/*">
+            <button class="btn btn-outline upload-researcher-photo" data-index="${index}" type="button"><i class="fa-solid fa-camera"></i> Upload Photo</button>
+          </div>`;
+        container.appendChild(card);
+      });
+      container.querySelectorAll(".researcher-name, .researcher-role").forEach(input => input.addEventListener("input", e => {
+        const i=Number(e.target.dataset.index); if (!content.researchers[i]) return;
+        if (e.target.classList.contains("researcher-name")) content.researchers[i].name=e.target.value; else content.researchers[i].role=e.target.value;
+      }));
+      container.querySelectorAll(".upload-researcher-photo").forEach(btn => btn.addEventListener("click", () => uploadResearcherPhoto(Number(btn.dataset.index))));
+    }
+
+    function renderAdviserPhotoPreview() {
+      const preview=$("adviserPhotoPreview"); if(!preview) return;
+      preview.innerHTML=content.general?.adviserPhoto ? `<img src="${escapeHtml(content.general.adviserPhoto)}" alt="Research Adviser">` : `<i class="fa-solid fa-user-tie"></i>`;
+    }
+
+    async function uploadResearcherPhoto(index) {
+      if (!supabaseClient || !currentUser) { showStatus($("adminStatus"), "You must be signed in before uploading.", "error"); return; }
+      const input=document.querySelector(`.researcher-photo-file[data-index="${index}"]`); const file=input?.files?.[0];
+      if(!file){showStatus($("adminStatus"),"Choose a researcher photo first.","error");return;}
+      if(!file.type.startsWith("image/")){showStatus($("adminStatus"),"Please choose an image file.","error");return;}
+      try {
+        const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_"); const path=`researchers/${Date.now()}-${index}-${safe}`;
+        const {error}=await supabaseClient.storage.from("thesis-media").upload(path,file,{cacheControl:"3600",upsert:false}); if(error) throw error;
+        const {data}=supabaseClient.storage.from("thesis-media").getPublicUrl(path); if(!data?.publicUrl) throw new Error("Could not create a public image URL. Make sure the thesis-media bucket is public.");
+        content.researchers[index].photo=data.publicUrl;
+        const {error:saveError}=await supabaseClient.from("site_content").upsert({key:"researchers",content:content.researchers,updated_at:new Date().toISOString(),updated_by:currentUser.id},{onConflict:"key"}); if(saveError) throw saveError;
+        input.value=""; renderResearcherAdminList(); renderPublicSite(); showStatus($("adminStatus"),"Researcher photo uploaded successfully.","success");
+      } catch(error){console.error(error);showStatus($("adminStatus"),"Photo upload failed: "+(error.message||"Unknown error"),"error");}
+    }
+
+    async function uploadAdviserPhoto() {
+      if (!supabaseClient || !currentUser) { showStatus($("adminStatus"), "You must be signed in before uploading.", "error"); return; }
+      const file=$("adviserPhotoFile")?.files?.[0]; if(!file){showStatus($("adminStatus"),"Choose the adviser photo first.","error");return;}
+      if(!file.type.startsWith("image/")){showStatus($("adminStatus"),"Please choose an image file.","error");return;}
+      try {
+        const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_"); const path=`researchers/adviser-${Date.now()}-${safe}`;
+        const {error}=await supabaseClient.storage.from("thesis-media").upload(path,file,{cacheControl:"3600",upsert:false}); if(error) throw error;
+        const {data}=supabaseClient.storage.from("thesis-media").getPublicUrl(path); if(!data?.publicUrl) throw new Error("Could not create a public image URL. Make sure the thesis-media bucket is public.");
+        content.general.adviserPhoto=data.publicUrl; content.general.adviser=$("adminAdviserName").value.trim() || content.general.adviser;
+        const {error:saveError}=await supabaseClient.from("site_content").upsert({key:"general",content:content.general,updated_at:new Date().toISOString(),updated_by:currentUser.id},{onConflict:"key"}); if(saveError) throw saveError;
+        $("adviserPhotoFile").value=""; renderAdviserPhotoPreview(); renderPublicSite(); showStatus($("adminStatus"),"Adviser photo uploaded successfully.","success");
+      } catch(error){console.error(error);showStatus($("adminStatus"),"Adviser photo upload failed: "+(error.message||"Unknown error"),"error");}
     }
 
     async function saveSection(section) {
@@ -1906,7 +1965,8 @@
           scope: $("adminScope").value.trim(),
           problem: $("adminProblem").value.trim(),
           sustainability: $("adminSustainability").value.trim(),
-          adviser: $("adminAdviser").value.trim()
+          adviser: $("adminAdviser").value.trim(),
+          adviserPhoto: content.general?.adviserPhoto || ""
         };
       }
 
@@ -1943,16 +2003,12 @@
       }
 
       if (section === "researchers") {
-        value = $("adminResearchers").value
-          .split("\n")
-          .map(line => {
-            const parts = line.split("|");
-            return {
-              name: (parts[0] || "").trim(),
-              role: (parts[1] || "Proponent").trim()
-            };
-          })
-          .filter(x => x.name);
+        value = Array.from(document.querySelectorAll("#researcherAdminList .researcher-admin-card"))
+          .map((row, index) => ({
+            name: (row.querySelector(".researcher-name")?.value || "").trim(),
+            role: (row.querySelector(".researcher-role")?.value || "Proponent").trim(),
+            photo: content.researchers?.[index]?.photo || ""
+          })).filter(x => x.name);
       }
 
       try {
@@ -1966,6 +2022,14 @@
           }, { onConflict: "key" });
 
         if (error) throw error;
+
+        if (section === "researchers") {
+          content.general.adviser = $("adminAdviserName").value.trim() || content.general.adviser;
+          const generalSave = await supabaseClient.from("site_content").upsert({
+            key: "general", content: content.general, updated_at: new Date().toISOString(), updated_by: user.id
+          }, { onConflict: "key" });
+          if (generalSave.error) throw generalSave.error;
+        }
 
         if (section === "general") content.general = { ...content.general, ...value };
         if (section === "objectives") content.objectives = value;
@@ -2189,6 +2253,7 @@
     });
 
     $("uploadMediaBtn").addEventListener("click", uploadMedia);
+    $("uploadAdviserPhotoBtn").addEventListener("click", uploadAdviserPhoto);
 
     // Initial load
     loadContent();
